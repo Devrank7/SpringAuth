@@ -20,7 +20,7 @@ public class Course {
     @Column
     private String name;
     @Column(length = 1024)
-    private String desc;
+    private String description;
     @Column
     private int score = 0;
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -32,7 +32,7 @@ public class Course {
     public Course(Long id, String name, String desc, int score) {
         this.id = id;
         this.name = name;
-        this.desc = desc;
+        this.description = desc;
         this.score = score;
     }
     public void incrementScore() {

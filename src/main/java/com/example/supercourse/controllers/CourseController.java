@@ -65,7 +65,7 @@ public class CourseController {
         // Создаём курс
         Course course = new Course();
         course.setName(courseRequest.getTitle());
-        course.setDesc(courseRequest.getDescription());
+        course.setDescription(courseRequest.getDescription());
         course.setUser(user);
         course = courseRepository.save(course);
 
@@ -87,5 +87,18 @@ public class CourseController {
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Курс создан");
+    }
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteCourse(@PathVariable long id,
+                                          @AuthenticationPrincipal org.springframework.security.core.userdetails.User principal
+    ) {
+        Course course = courseRepository.findById(id).orElseThrow();
+        User user = userRepository.findByEmail(principal.getUsername())
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        if (!course.getUser().equals(user)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
+        }
+        courseRepository.delete(course);
+        return ResponseEntity.ok("Course Deleted");
     }
 }
