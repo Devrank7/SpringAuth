@@ -32,7 +32,7 @@ public class User implements UserDetails {
     @Column
     @Enumerated(value = EnumType.STRING)
     private Roles role = Roles.USER;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Course> courses = new ArrayList<>();
 
     public User(Long id, String email, String password) {

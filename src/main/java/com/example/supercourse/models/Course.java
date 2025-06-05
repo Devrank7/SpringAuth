@@ -1,5 +1,6 @@
 package com.example.supercourse.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,10 +24,11 @@ public class Course {
     private String description;
     @Column
     private int score = 0;
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Photo> photos = new ArrayList<>();
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn
+    @JsonIgnore
     private User user;
 
     public Course(Long id, String name, String desc, int score) {
@@ -39,5 +41,17 @@ public class Course {
         System.out.println("score inc " + score);
         score++;
         System.out.println("Score inc after: " + score);
+    }
+
+    @Override
+    public String toString() {
+        return "Course{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", score=" + score +
+                ", photos=" + photos +
+                ", user=" + user +
+                '}';
     }
 }

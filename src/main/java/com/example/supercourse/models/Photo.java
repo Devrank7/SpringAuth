@@ -1,5 +1,6 @@
 package com.example.supercourse.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,13 +16,13 @@ public class Photo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String path;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn
+    @JsonIgnore
     private Course course;
 
-    public Photo(Long id, String path, Course course) {
+    public Photo(Long id, String path) {
         this.id = id;
         this.path = path;
-        this.course = course;
     }
 }

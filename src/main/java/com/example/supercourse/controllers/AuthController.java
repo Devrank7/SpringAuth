@@ -6,8 +6,10 @@ import com.example.supercourse.dao.RegisterRequest;
 import com.example.supercourse.models.User;
 import com.example.supercourse.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,15 +30,27 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public String login(@RequestBody AuthRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
-        return jwtUtil.generateToken(request.getEmail());
+    public ResponseEntity<?> login(@RequestBody AuthRequest request) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+            );
+
+            String token = jwtUtil.generateToken(request.getEmail());
+            return ResponseEntity.ok(token); // возвращаем DTO
+
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Неправильный логин или пароль");
+        }
     }
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody RegisterRequest request) {
-        User newUser = authService.register(request);
-        return ResponseEntity.ok(newUser);
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+        try {
+            User newUser = authService.register(request);
+            return ResponseEntity.ok(newUser);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 }

@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,22 +17,19 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private UserRepository userRepository;
     @GetMapping("/my")
-    public ResponseEntity<User> getUser1(@AuthenticationPrincipal org.springframework.security.core.userdetails.User user) throws Exception {
-        User user1 = userRepository.findByEmail(user.getUsername()).orElseThrow();
-        return ResponseEntity.status(HttpStatus.OK).body(user1);
+    public ResponseEntity<User> getUser1(@AuthenticationPrincipal User user) throws Exception {
+        return ResponseEntity.status(HttpStatus.OK).body(user);
     }
     @DeleteMapping("/delete")
-    public ResponseEntity<?> getDelete(@AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
-        User user1 = userRepository.findByEmail(user.getUsername()).orElseThrow();
-        userRepository.delete(user1);
+    public ResponseEntity<?> getDelete(@AuthenticationPrincipal User user) {
+        userRepository.delete(user);
         return ResponseEntity.ok("Delete User");
     }
     @PutMapping("/update")
     public ResponseEntity<?> getUpdate(
-            @AuthenticationPrincipal org.springframework.security.core.userdetails.User principal,
+            @AuthenticationPrincipal User user,
             @RequestBody UpdateRequest updateRequest
     ) {
-        User user = userRepository.findByEmail(principal.getUsername()).orElseThrow();
 
         if (updateRequest.getEmail() != null) {
             user.setEmail(updateRequest.getEmail());
